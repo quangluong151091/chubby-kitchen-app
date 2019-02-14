@@ -16,7 +16,7 @@ class EventCard extends Component {
             <p className="card-text text-truncate">
               {this.props.eventDescription}
             </p>
-            <Link to={"/detail/" + this.props.eventId + "/" + this.props.eventTitle} className="text-danger">More Detail!</Link>
+            <Link to={"/events/" + this.props.eventId + "/" + this.props.eventTitle} className="text-danger">More Detail!</Link>
           </div>
         </div>
       </div>
