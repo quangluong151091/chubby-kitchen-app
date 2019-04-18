@@ -2,7 +2,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Demo
 
-### `https://chubby-kitchen.firebaseapp.com/`
+https://chubby-kitchen.firebaseapp.com/
 
 ## Available Scripts
 
