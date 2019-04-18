@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_PATH = 'https://www.some-server.com/~e1500949/php/chubbykitchen/enrollConfirm.php';
+const API_PATH = 'https://www.some-server.com/php/chubbykitchen/enrollConfirm.php';
 
 export const updateInfo = (profile) => {
   return (dispatch, getState, { getFirebase , getFirestore }) => {
