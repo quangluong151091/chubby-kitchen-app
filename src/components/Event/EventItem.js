@@ -24,19 +24,23 @@ class EventItem extends Component {
   render() {
     return (
       <div className="card mt-3 mb-3 border-danger">
-        <div className="card-body">
-          <h5 className="text-truncate text-primary">
-            {this.props.eventTitle}
-          </h5>
-          <p className="font-weight-bold card-text text-truncate">
-            <span>{this.props.eventDate} </span>
-            - 
+        <div className="card">
+          <div className="card-body">
+            <Link to={"/events/" + this.props.eventId + "/" + this.props.eventTitle}>
+              <h5 className="text-truncate text-primary">
+                {this.props.eventTitle}
+              </h5>
+            </Link>
+            <p className="font-weight-bold card-text text-truncate">
+              <span>{this.props.eventDate} </span>
+              -
             <span> enroll before <kbd className="bg-danger">{this.props.eventLastEnroll}</kbd></span>
-          </p>
-          <p className="card-text text-truncate">
-            {this.props.eventDescription}
-          </p>
-          <Link to={"/events/" + this.props.eventId + "/" + this.props.eventTitle} className="text-danger">Read more...</Link>
+            </p>
+            <p className="card-text text-truncate">
+              {this.props.eventDescription}
+            </p>
+            <Link to={"/events/" + this.props.eventId + "/" + this.props.eventTitle} className="text-danger">Read more...</Link>
+          </div>
         </div>
       </div>
 

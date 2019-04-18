@@ -3,40 +3,26 @@ import Header from '../../Header/Header';
 import UserInfoCard from '../../Card/UserInfoCard';
 import Detail from './Detail';
 import { connect } from 'react-redux';
+import { firestoreConnect } from 'react-redux-firebase'
+import { compose } from 'redux'
 
 class ArchiveDetail extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      archiveDetail: null
-    }
-  }
-  componentWillMount = () => {
-    const eId = this.props.match.params.id;
-    // console.log(eId)
-    // console.log(this.props.archiveList)
-    const archiveDetail = this.props.archiveList.filter(d => d.id === eId);
-    // console.log(archiveDetail)
-    this.setState({
-      archiveDetail: archiveDetail[0]
-    })
-  }
   showDetail = () => {
-    if (this.state.archiveDetail) {
+    if (this.props.archive) {
       return (
         <Detail
-          archive={this.state.archiveDetail}
-          archiveId={this.state.archiveDetail.id}
-          archiveTitle={this.state.archiveDetail.title}
-          archiveDescription={this.state.archiveDetail.description}
-          archiveImg={this.state.archiveDetail.image}
-          archiveCaption={this.state.archiveDetail.caption}
+          archive={this.props.archive}
+          archiveId={this.props.archive.id}
+          archiveTitle={this.props.archive.title}
+          archiveDescription={this.props.archive.description}
+          archiveImg={this.props.archive.image}
+          archiveCaption={this.props.archive.caption}
         />
       )
     }
   }
   render() {
-    console.log(this.state.archiveDetail)
+    // console.log(this.props.archive)
     return (
       <section>
         <Header />
@@ -55,10 +41,19 @@ class ArchiveDetail extends Component {
 
 
 const mapStateToProps = (state, ownProps) => {
+  const archiveid = ownProps.match.params.id;
+  const archiveList = state.firestore.data.archiveList;
+  const archive = archiveList ? archiveList[archiveid] : null;
   return {
-    archiveList: state.archiveList
+    archive: archive
   }
 }
-export default connect(mapStateToProps)(ArchiveDetail);
+
+export default compose(
+  connect(mapStateToProps),
+  firestoreConnect([
+    { collection : 'archiveList' }
+  ])
+)(ArchiveDetail);
 
 // export default ArchiveDetail

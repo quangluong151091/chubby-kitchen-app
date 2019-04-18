@@ -11,6 +11,10 @@ class Archive extends Component {
         <div className="container mt-5">
           <div className="row">
             <div className="col-sm-9">
+            <p className="h1 font-weight-bold text-center">
+              ALL ARCHIVES EVENT
+            </p>
+            <hr />
 
             <ArchiveList />
               

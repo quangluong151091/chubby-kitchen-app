@@ -1,54 +1,12 @@
 import React, { Component } from 'react'
 import EventCard from '../Card/EventCard';
 import { connect } from 'react-redux';
-import { eventData } from '../../firebaseDB/db';
+// import { eventData } from '../../firebaseDB/db';
 import { Link } from "react-router-dom";
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase'
 
 class Upcoming extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      Upcoming: null
-    }
-  }
-  componentWillMount = () => {
-    eventData.on('value', (events) => {
-      var arrayEvent = [];
-      events.forEach((element) => {
-        const id = element.key;
-        const title = element.val().title;
-        const time = element.val().time;
-        const date = element.val().date;
-        const lastdate_enroll = element.val().lastdate_enroll;
-        const lastdate_payment = element.val().lastdate_payment;
-        const place = element.val().place;
-        const price = parseInt(element.val().price);
-        const description = element.val().description;
-        arrayEvent.push({
-          id: id,
-          title: title,
-          time: time,
-          date: date,
-          lastdate_enroll: lastdate_enroll,
-          lastdate_payment: lastdate_payment,
-          place: place,
-          price: price,
-          description: description
-        })
-      })
-      this.props.addEventListToStore(arrayEvent);
-      let Upcoming = [];
-      for (let i = 0; i < 3; i++) {
-        Upcoming.push(arrayEvent[i]);
-      }
-      // console.log(Upcoming);
-      this.setState({
-        Upcoming: Upcoming
-      })
-      // console.log(this.state.Upcoming);
-      // console.log(this.state.eventList);
-    })
-  }
   dateToString = (str) => {
     str = str.slice(0, 10);
 
@@ -57,9 +15,9 @@ class Upcoming extends Component {
     return str;
   }
   showUpcoming = () => {
-    if (this.state.Upcoming) {
+    if (this.props.eventList) {
       return (
-        this.state.Upcoming.map((value, key) => {
+        this.props.eventList.map((value, key) => {
           return (
             <EventCard
               key={key}
@@ -95,16 +53,20 @@ class Upcoming extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapStateToProps = (state, ownProps) => {
   return {
-    addEventListToStore: (eventList) => {
-      dispatch({
-        type: "GET_EVENT_LIST",
-        eventList
-      })
-    }
+    eventList: state.firestore.ordered.eventList
   }
 }
 
-export default connect(null, mapDispatchToProps)(Upcoming);
+export default compose(
+  connect(mapStateToProps),
+  firestoreConnect([
+    { collection: 'eventList',
+      limit: 3,
+      orderBy: ['lastdate_enroll', 'asc'],
+      startAt: (new Date()).toISOString()
+    }
+  ])
+)(Upcoming);
 // export default Upcoming

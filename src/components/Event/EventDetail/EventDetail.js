@@ -3,24 +3,10 @@ import Header from '../../Header/Header';
 import UserInfoCard from '../../Card/UserInfoCard';
 import Detail from './Detail';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase'
 
 class EventDetail extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      eventDetail: {}
-    }
-  }
-  componentWillMount = () => {
-    const eId = this.props.match.params.id;
-    // console.log(eId)
-    // console.log(this.props.eventList)
-    const eventDetail = this.props.eventList.filter(d => d.id === eId)
-    // console.log(eventDetail)
-    this.setState({
-      eventDetail: eventDetail[0]
-    })
-  }
   dateToString = (str) => {
     str = str.slice(0, 10);
 
@@ -29,19 +15,22 @@ class EventDetail extends Component {
     return str;
   }
   showDetail = () => {
-    if (this.state.eventDetail) {
+    if (this.props.event) {
       return (
         <Detail
-          event={this.state.eventDetail}
-          eventId={this.state.eventDetail.id}
-          eventTitle={this.state.eventDetail.title}
-          eventDescription={this.state.eventDetail.description}
-          eventTime={this.state.eventDetail.time}
-          eventDate={this.dateToString(this.state.eventDetail.date)}
-          eventLastEnroll={this.dateToString(this.state.eventDetail.lastdate_enroll)}
-          eventLastPayment={this.dateToString(this.state.eventDetail.lastdate_payment)}
-          eventPlace={this.state.eventDetail.place}
-          eventPrice={this.state.eventDetail.price}
+          event={this.props.event}
+          eventId={this.props.match.params.id}
+          eventTitle={this.props.event.title}
+          eventDescription={this.props.event.description}
+          eventTime={this.props.event.time}
+          // eventDate={this.state.date}
+          // eventLastEnroll={this.state.lastdate_enroll}
+          // eventLastPayment={this.state.lastdate_payment}
+          eventDate={this.dateToString(this.props.event.date)}
+          eventLastEnroll={this.dateToString(this.props.event.lastdate_enroll)}
+          eventLastPayment={this.dateToString(this.props.event.lastdate_payment)}
+          eventPlace={this.props.event.place}
+          eventPrice={this.props.event.price}
         />
       )
     }
@@ -65,10 +54,20 @@ class EventDetail extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  // console.log(state);
+  const eventId = ownProps.match.params.id;
+  const eventList = state.firestore.data.eventList;
+  const event = eventList ? eventList[eventId] : null
   return {
-    eventList: state.eventList
+    event: event
   }
 }
-export default connect(mapStateToProps)(EventDetail);
+
+export default compose(
+  connect(mapStateToProps),
+  firestoreConnect([
+    { collection : 'eventList' }
+  ])
+)(EventDetail);
 
 // export default EventDetail

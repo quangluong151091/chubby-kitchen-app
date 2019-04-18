@@ -8,6 +8,7 @@ import Register from '../components/Form/Register';
 import EditInfo from '../components/EditInfo/EditInfo';
 import EventDetail from '../components/Event/EventDetail/EventDetail';
 import ArchiveDetail from '../components/Archive/ArchiveDetail/ArchiveDetail';
+import EnrollList from '../components/EnrollList/EnrollList';
 
 class AppRouter extends Component {
   render() {
@@ -22,6 +23,7 @@ class AppRouter extends Component {
           <Route path="/edit-user-info" component={EditInfo} />
           <Route path="/events/:id/:slug" component={EventDetail} />
           <Route path="/archived/:id/:slug" component={ArchiveDetail} />
+          <Route path="/enrollment" component={EnrollList} />
           <Route component={Home} />
         </Switch>
       </div>

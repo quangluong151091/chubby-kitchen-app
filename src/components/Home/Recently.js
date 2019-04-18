@@ -1,48 +1,21 @@
 import React, { Component } from 'react'
 import ArchiveCard from '../Card/ArchiveCard';
-import { archiveData } from '../../firebaseDB/db'
+// import { archiveData } from '../../firebaseDB/db'
 import { connect } from 'react-redux';
 import { Link } from "react-router-dom";
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase'
 
 class Recently extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ArchiveList: null
-    }
-  }
-  componentWillMount = () => {
-    archiveData.on('value', (archives) => {
-      var arrayArchive = [];
-      archives.forEach((element) => {
-        const id = element.key;
-        const title = element.val().title;
-        const description = element.val().description;
-        const image = element.val().image;
-        const caption = element.val().caption;
-        arrayArchive.push({
-          id: id,
-          title: title,
-          description: description,
-          image: image,
-          caption: caption
-        })
-      })
-      arrayArchive.sort(() => Math.random() - 0.5);
-      this.props.addArchiveListToStore(arrayArchive);
-      let recent = [];
-      for (let i = 0; i < 2; i++) {
-        recent.push(arrayArchive[i]);
-      }
-      this.setState({
-        ArchiveList: recent
-      })
-    })
-  }
   showRecently = () => {
-    if (this.state.ArchiveList) {
+    if (this.props.archiveList) {
+      const archiveList = this.props.archiveList.sort(() => 0.5 - Math.random())
+      const recentlyList = []
+      for (let i = 0; i < 2; i++) {
+        recentlyList.push(archiveList[i])
+      }
       return (
-        this.state.ArchiveList.map((value, key) => {
+        recentlyList.map((value, key) => {
           return (
             <ArchiveCard
               key={key}
@@ -77,17 +50,17 @@ class Recently extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+const mapStateToProps = (state, ownProps) => {
+  // console.log(state.firebase.ordered.ArchiveEvent)
   return {
-    addArchiveListToStore: (archiveList) => {
-      dispatch({
-        type: "GET_ARCHIVE_LIST",
-        archiveList
-      })
-    }
+    archiveList: state.firestore.ordered.archiveList
   }
 }
-
-export default connect(null, mapDispatchToProps)(Recently);
+export default compose(
+  connect(mapStateToProps),
+  firestoreConnect([
+    { collection: 'archiveList' }
+  ])
+)(Recently);
 
 // export default Recently

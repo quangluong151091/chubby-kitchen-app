@@ -1,23 +1,41 @@
 import React, { Component } from 'react';
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import { connect } from 'react-redux'
+import { signIn } from '../../Store/actions/authActions';
 
 class LogIn extends Component {
-  componentWillMount
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: ''
+    }
+  }
+  isChange = (event) => {
+    const target = event.target;
+    const name = target.name;
+    const value = target.value;
+
+    this.setState({
+      [name]: value
+    })
+  }
+  handleSubmit = (event) => {
+    event.preventDefault();
+    this.props.signIn(this.state);
+  }
   render() {
+    const {authError, auth} = this.props;
+    if(auth.uid) return <Redirect to="/" />
     return (
       <section id='login'>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
         <div className="container">
           <div className="row">
             <div className="col-sm-4 mx-auto">
-              <div className="card">
+              <div className="card mt-5">
                 <h5 className="card-header text-center font-weight-bold bg-primary text-white">Log In</h5>
                 <div className="card-body">
-                  <form action="POST">
+                  <form action="POST" onSubmit={(e) => this.handleSubmit(e)}>
                     <div className="form-group">
                       <div className="input-group mb-3 mt-4">
                         <div className="input-group-prepend">
@@ -25,7 +43,7 @@ class LogIn extends Component {
                             <i className="fas fa-user fa-sm" />
                           </span>
                         </div>
-                        <input type="text" className="form-control" placeholder="Email" aria-label="Email" aria-describedby="basic-addon1" />
+                        <input onChange={(e) => this.isChange(e)} type="email" name="email" className="form-control" placeholder="Email" />
                       </div>
                     </div>
                     <div className="form-group">
@@ -35,10 +53,13 @@ class LogIn extends Component {
                             <i className="fas fa-lock fa-sm" />
                           </span>
                         </div>
-                        <input type="text" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1" />
+                        <input onChange={(e) => this.isChange(e)} type="password" name="password" className="form-control" placeholder="Password" pattern=".{6,}" title="Password must be minimum 6 characters" />
                       </div>
                     </div>
-                    <button type="button" className="btn btn-success mt-3">Log In</button>
+                    <div className="text-center text-danger">
+                      {authError ? <p>{authError}</p> : null}
+                    </div>
+                    <button type="submit" className="btn btn-success mt-3">Log In</button>
                   </form>
                   <hr />
                   Don't have an account!
@@ -54,4 +75,22 @@ class LogIn extends Component {
     )
   }
 }
-export default LogIn;
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    authError: state.auth.authError,
+    auth: state.firebase.auth
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    signIn: (credential) => {
+      dispatch(
+        signIn(credential)
+      )
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LogIn);

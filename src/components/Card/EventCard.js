@@ -7,7 +7,11 @@ class EventCard extends Component {
       <div className="col-sm-4 my-4">
         <div className="card">
           <div className="card-body">
-            <h4 className="card-title text-truncate text-primary">{this.props.eventTitle}</h4>
+            <Link to={"/events/" + this.props.eventId + "/" + this.props.eventTitle}>
+              <h4 className="card-title text-truncate text-primary">
+                {this.props.eventTitle}
+              </h4>
+            </Link>
             <p className="font-weight-bold card-text text-truncate">
               <span>{this.props.eventDate} </span>
               -

@@ -1,47 +1,11 @@
 import React, { Component } from 'react'
-import { eventData } from '../../firebaseDB/db';
+// import { eventData } from '../../firebaseDB/db';
 import EventItem from './EventItem';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase'
 
 class EventList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      eventList: null
-    }
-  }
-  componentWillMount = () => {
-    eventData.on('value', (events) => {
-      var arrayEvent = [];
-      events.forEach((element) => {
-        const id = element.key;
-        const title = element.val().title;
-        const time = element.val().time;
-        const date = element.val().date;
-        const lastdate_enroll = element.val().lastdate_enroll;
-        const lastdate_payment = element.val().lastdate_payment;
-        const place = element.val().place;
-        const price = element.val().price;
-        const description = element.val().description;
-        arrayEvent.push({
-          id: id,
-          title: title,
-          time: time,
-          date: date,
-          lastdate_enroll: lastdate_enroll,
-          lastdate_payment: lastdate_payment,
-          place: place,
-          price: price,
-          description: description
-        })
-        this.setState({
-          eventList: arrayEvent
-        })
-        // console.log(this.state.eventList)
-        this.props.addEventListToStore(arrayEvent);
-      })
-    })
-  }
   dateToString = (str) => {
     str = str.slice(0, 10);
 
@@ -50,9 +14,11 @@ class EventList extends Component {
     return str;
   }
   getData = () => {
-    if (this.state.eventList) {
+    if (this.props.eventList) {
+      // console.log(this.props.eventList)
       return (
-        this.state.eventList.map((value, key) => {
+        this.props.eventList.map((value, key) => {
+          // console.log(value.id)
           return (
             <EventItem
               key={key}
@@ -62,6 +28,9 @@ class EventList extends Component {
               eventTitle={value.title}
               eventDescription={value.description}
               eventTime={value.time}
+              // eventDate={value.date}
+              // eventLastEnroll={value.lastdate_enroll}
+              // eventLastPayment={value.lastdate_payment}
               eventDate={this.dateToString(value.date)}
               eventLastEnroll={this.dateToString(value.lastdate_enroll)}
               eventLastPayment={this.dateToString(value.lastdate_payment)}
@@ -83,21 +52,19 @@ class EventList extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  // console.log(state)
   return {
-    eventList: state.eventList
-  }
-}
-
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    addEventListToStore: (eventList) => {
-      dispatch({
-        type: "GET_EVENT_LIST",
-        eventList
-      })
-    }
+    eventList: state.firestore.ordered.eventList
   }
 }
 
 // export default EventList
-export default connect(mapStateToProps, mapDispatchToProps)(EventList);
+export default compose(
+  connect(mapStateToProps),
+  firestoreConnect([
+    { collection : 'eventList',
+      orderBy: ['date', 'asc'],
+      startAt: (new Date()).toISOString()
+    }
+  ])
+)(EventList);

@@ -26,6 +26,9 @@ class Footer extends Component {
                 </li>
               </ul>
               <p className="text-muted small mb-4 mb-lg-0">© Chubby Kitchen 2019. All Rights Reserved.</p>
+              <small className='text-muted text-center mb-3 font-weight-light font-italic'>
+                Working best on Google Chrome and FireFox
+              </small>
             </div>
             <div className="col-sm-3">
               <ul className="list-inline mb-2">
